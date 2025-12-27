@@ -1,3 +1,7 @@
 tmux/plugins/
 tmux/resurrect/
 tmux/continuum/
+
+# OS generated files
+.DS_Store
+*.swp
