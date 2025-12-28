@@ -6,7 +6,7 @@ font-family = "Maple Mono NF"
 font-size = 14
 
 # Theme
-theme = "Catppuccin Mocha"
+theme = "Gruvbox Material"
 
 # Window
 window-padding-x = 0

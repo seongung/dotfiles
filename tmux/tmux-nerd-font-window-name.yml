@@ -1,0 +1,7 @@
+config:
+  show-name: true
+  fallback-icon: "󰆦"
+
+icons:
+  "2.0.72": ""
+  claude: ""
