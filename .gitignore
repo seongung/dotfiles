@@ -1,6 +1,6 @@
-tmux/plugins/
-tmux/resurrect/
-tmux/continuum/
+tmux/.config/tmux/plugins/
+tmux/.config/tmux/resurrect/
+tmux/.config/tmux/continuum/
 
 # OS generated files
 .DS_Store
