@@ -21,4 +21,4 @@ HOOKS_INDICATOR=""
 [ -n "$HOOKS" ] && [ "$HOOKS" != "null" ] && HOOKS_INDICATOR=" hooks"
 
 # Output: branch | icon hooks | directory
-echo "${GIT_BRANCH}◆${HOOKS_INDICATOR} | ${DIR_NAME}"
+echo ""

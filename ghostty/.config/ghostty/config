@@ -18,6 +18,3 @@ adjust-cell-height = -1%
 
 # macOS specific
 macos-option-as-alt = true
-
-# Ensure Cmd+V triggers paste action, not key event
-keybind = super+v=paste
