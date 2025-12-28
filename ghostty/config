@@ -3,7 +3,7 @@
 
 # Font
 font-family = "Maple Mono NF"
-font-size = 14
+font-size = 15.5
 
 # Theme
 theme = "Gruvbox Material"
@@ -14,6 +14,10 @@ window-padding-y = 0
 window-padding-balance = true
 window-padding-color = extend
 window-step-resize = true
+adjust-cell-height = -1%
 
 # macOS specific
 macos-option-as-alt = true
+
+# Ensure Cmd+V triggers paste action, not key event
+keybind = super+v=paste
