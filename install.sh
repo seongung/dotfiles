@@ -262,8 +262,8 @@ install_tools() {
             local btop_arch="${arch}"
             [[ "$arch" == "amd64" ]] && btop_arch="x86_64"
             [[ "$arch" == "arm64" ]] && btop_arch="aarch64"
-            curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-linux-musl.tbz" -o /tmp/btop.tbz
-            if [[ -f /tmp/btop.tbz ]]; then
+            curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-unknown-linux-musl.tbz" -o /tmp/btop.tbz
+            if [[ -f /tmp/btop.tbz ]] && file /tmp/btop.tbz | grep -q bzip2; then
                 tar -xjf /tmp/btop.tbz -C /tmp
                 mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
                 rm -rf /tmp/btop*
