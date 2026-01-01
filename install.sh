@@ -282,7 +282,7 @@ install_tools() {
     fi
 
     # Configure btop for GPU monitoring
-    if command -v btop >/dev/null && [[ ! -f "${HOME}/.config/btop/btop.conf" ]]; then
+    if command -v btop >/dev/null; then
         mkdir -p "${HOME}/.config/btop"
         local gpu_boxes=""
         if command -v nvidia-smi >/dev/null; then
