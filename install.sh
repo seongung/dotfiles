@@ -270,6 +270,9 @@ install_tools() {
             if [[ -f /tmp/btop.tbz ]] && file /tmp/btop.tbz | grep -q bzip2; then
                 tar -xjf /tmp/btop.tbz -C /tmp
                 mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
+                # Install themes
+                mkdir -p "${HOME}/.config/btop/themes"
+                cp -r /tmp/btop/themes/* "${HOME}/.config/btop/themes/"
                 rm -rf /tmp/btop*
             fi
         elif [[ "$os" == "darwin" ]] && command -v brew >/dev/null; then
