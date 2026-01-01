@@ -221,6 +221,25 @@ install_tools() {
         fi
     fi
 
+    # neovim
+    if ! command -v nvim >/dev/null; then
+        log_info "Installing neovim..."
+        local nvim_arch
+        [[ "$arch" == "amd64" ]] && nvim_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && nvim_arch="arm64"
+        if [[ "$os" == "linux" ]] && [[ -n "$nvim_arch" ]]; then
+            curl -sL "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${nvim_arch}.tar.gz" | tar xz -C /tmp
+            mv /tmp/nvim-linux-${nvim_arch}/bin/nvim "${HOME}/.local/bin/"
+            mkdir -p "${HOME}/.local/lib"
+            cp -r /tmp/nvim-linux-${nvim_arch}/lib/* "${HOME}/.local/lib/" 2>/dev/null || true
+            mkdir -p "${HOME}/.local/share"
+            cp -r /tmp/nvim-linux-${nvim_arch}/share/* "${HOME}/.local/share/" 2>/dev/null || true
+            rm -rf /tmp/nvim-linux-${nvim_arch}
+        elif [[ "$os" == "darwin" ]] && command -v brew >/dev/null; then
+            brew install neovim
+        fi
+    fi
+
     # yq (YAML processor)
     if ! command -v yq >/dev/null; then
         log_info "Installing yq..."
