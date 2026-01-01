@@ -19,6 +19,11 @@ if command -v zoxide &>/dev/null; then
     eval "$(zoxide init bash 2>/dev/null || zoxide init zsh 2>/dev/null)"
 fi
 
+# Initialize atuin if available
+if command -v atuin &>/dev/null; then
+    eval "$(atuin init bash 2>/dev/null || atuin init zsh 2>/dev/null)"
+fi
+
 # FZF integration
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

@@ -251,6 +251,12 @@ install_tools() {
             fi
         fi
     fi
+
+    # atuin (shell history)
+    if ! command -v atuin >/dev/null; then
+        log_info "Installing atuin..."
+        curl -sL https://raw.githubusercontent.com/atuinsh/atuin/main/install.sh | ATUIN_NO_MODIFY_PATH=1 sh -s -- --no-modify-path
+    fi
 }
 
 # Main installation
