@@ -281,6 +281,25 @@ install_tools() {
         fi
     fi
 
+    # Configure btop for GPU monitoring
+    if command -v btop >/dev/null && [[ ! -f "${HOME}/.config/btop/btop.conf" ]]; then
+        mkdir -p "${HOME}/.config/btop"
+        local gpu_boxes=""
+        if command -v nvidia-smi >/dev/null; then
+            local gpu_count=$(nvidia-smi -L 2>/dev/null | wc -l)
+            if [[ "$gpu_count" -gt 0 ]]; then
+                log_info "Detected $gpu_count NVIDIA GPU(s), configuring btop..."
+                for ((i=0; i<gpu_count; i++)); do
+                    gpu_boxes+=" gpu$i"
+                done
+            fi
+        fi
+        cat > "${HOME}/.config/btop/btop.conf" << EOF
+shown_boxes = "cpu mem net proc${gpu_boxes}"
+show_gpu_info = "Auto"
+EOF
+    fi
+
     # atuin (shell history)
     if ! command -v atuin >/dev/null; then
         log_info "Installing atuin..."
