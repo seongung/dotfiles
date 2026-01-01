@@ -160,47 +160,97 @@ setup_shell() {
     done
 }
 
-# Install optional tools
-install_optional_tools() {
+# Install CLI tools (both local and remote)
+install_tools() {
     if [[ "${DOTFILES_MINIMAL:-0}" == "1" ]]; then
-        log_info "Skipping optional tools (minimal mode)"
+        log_info "Skipping tools (minimal mode)"
         return
     fi
 
     mkdir -p "${HOME}/.local/bin"
 
-    # fzf
+    local arch os
+    case "$(uname -m)" in
+        x86_64)  arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) log_warn "Unsupported architecture"; return ;;
+    esac
+    case "$(uname -s)" in
+        Linux)  os="linux" ;;
+        Darwin) os="darwin" ;;
+        *) log_warn "Unsupported OS"; return ;;
+    esac
+
+    # yq (YAML processor)
+    if ! command -v yq >/dev/null; then
+        log_info "Installing yq..."
+        curl -sL "https://github.com/mikefarah/yq/releases/latest/download/yq_${os}_${arch}" -o "${HOME}/.local/bin/yq"
+        chmod +x "${HOME}/.local/bin/yq"
+    fi
+
+    # fzf (fuzzy finder)
     if ! command -v fzf >/dev/null && [[ ! -d "${HOME}/.fzf" ]]; then
         log_info "Installing fzf..."
         git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf"
         "${HOME}/.fzf/install" --key-bindings --completion --no-update-rc --no-bash --no-zsh
     fi
 
-}
-
-# Install yq (always, both local and remote)
-install_yq() {
-    if command -v yq >/dev/null; then
-        return
+    # zoxide (smarter cd)
+    if ! command -v zoxide >/dev/null; then
+        log_info "Installing zoxide..."
+        curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-0.9.4-${arch}-unknown-${os}-musl.tar.gz" -o /tmp/zoxide.tar.gz 2>/dev/null || \
+        curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${arch}-unknown-${os}-musl.tar.gz" -o /tmp/zoxide.tar.gz 2>/dev/null
+        if [[ -f /tmp/zoxide.tar.gz ]]; then
+            tar -xzf /tmp/zoxide.tar.gz -C "${HOME}/.local/bin" zoxide 2>/dev/null || \
+            tar -xzf /tmp/zoxide.tar.gz -C /tmp && mv /tmp/zoxide "${HOME}/.local/bin/"
+            rm -f /tmp/zoxide.tar.gz
+        else
+            # Fallback: use zoxide installer
+            curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash -s -- --bin-dir "${HOME}/.local/bin"
+        fi
     fi
 
-    log_info "Installing yq..."
-    mkdir -p "${HOME}/.local/bin"
+    # dust (disk usage)
+    if ! command -v dust >/dev/null; then
+        log_info "Installing dust..."
+        local dust_arch="${arch}"
+        [[ "$arch" == "amd64" ]] && dust_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && dust_arch="aarch64"
+        local dust_os="${os}"
+        [[ "$os" == "darwin" ]] && dust_os="apple-darwin"
+        [[ "$os" == "linux" ]] && dust_os="unknown-linux-musl"
+        curl -sL "https://github.com/bootandy/dust/releases/latest/download/dust-v0.9.0-${dust_arch}-${dust_os}.tar.gz" -o /tmp/dust.tar.gz 2>/dev/null || \
+        curl -sL "https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-${dust_arch}-${dust_os}.tar.gz" -o /tmp/dust.tar.gz
+        if [[ -f /tmp/dust.tar.gz ]]; then
+            tar -xzf /tmp/dust.tar.gz -C /tmp
+            find /tmp -name 'dust' -type f -executable -exec mv {} "${HOME}/.local/bin/" \; 2>/dev/null || \
+            mv /tmp/dust-*/dust "${HOME}/.local/bin/" 2>/dev/null
+            rm -rf /tmp/dust*
+        fi
+    fi
 
-    local arch
-    case "$(uname -m)" in
-        x86_64)  arch="amd64" ;;
-        aarch64|arm64) arch="arm64" ;;
-        *) log_warn "Unsupported architecture for yq"; return ;;
-    esac
-    local os
-    case "$(uname -s)" in
-        Linux)  os="linux" ;;
-        Darwin) os="darwin" ;;
-        *) log_warn "Unsupported OS for yq"; return ;;
-    esac
-    curl -sL "https://github.com/mikefarah/yq/releases/latest/download/yq_${os}_${arch}" -o "${HOME}/.local/bin/yq"
-    chmod +x "${HOME}/.local/bin/yq"
+    # btop (system monitor)
+    if ! command -v btop >/dev/null; then
+        log_info "Installing btop..."
+        local btop_arch="${arch}"
+        [[ "$arch" == "amd64" ]] && btop_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && btop_arch="aarch64"
+        if [[ "$os" == "linux" ]]; then
+            curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-linux-musl.tbz" -o /tmp/btop.tbz
+            if [[ -f /tmp/btop.tbz ]]; then
+                tar -xjf /tmp/btop.tbz -C /tmp
+                mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
+                rm -rf /tmp/btop*
+            fi
+        elif [[ "$os" == "darwin" ]]; then
+            curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-macos-monterey.tbz" -o /tmp/btop.tbz
+            if [[ -f /tmp/btop.tbz ]]; then
+                tar -xjf /tmp/btop.tbz -C /tmp
+                mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
+                rm -rf /tmp/btop*
+            fi
+        fi
+    fi
 }
 
 # Main installation
@@ -227,11 +277,7 @@ main() {
     setup_nvim
     setup_starship
     setup_shell
-    install_yq
-
-    if [[ "$is_remote" == "false" ]]; then
-        install_optional_tools
-    fi
+    install_tools
 
     # Cleanup empty backup dir
     rmdir "$BACKUP_DIR" 2>/dev/null || true
