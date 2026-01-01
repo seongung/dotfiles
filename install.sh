@@ -244,26 +244,22 @@ install_tools() {
         fi
     fi
 
-    # btop (system monitor)
+    # btop (system monitor) - Linux only, use Homebrew on macOS
     if ! command -v btop >/dev/null; then
-        log_info "Installing btop..."
-        local btop_arch="${arch}"
-        [[ "$arch" == "amd64" ]] && btop_arch="x86_64"
-        [[ "$arch" == "arm64" ]] && btop_arch="aarch64"
         if [[ "$os" == "linux" ]]; then
+            log_info "Installing btop..."
+            local btop_arch="${arch}"
+            [[ "$arch" == "amd64" ]] && btop_arch="x86_64"
+            [[ "$arch" == "arm64" ]] && btop_arch="aarch64"
             curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-linux-musl.tbz" -o /tmp/btop.tbz
             if [[ -f /tmp/btop.tbz ]]; then
                 tar -xjf /tmp/btop.tbz -C /tmp
                 mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
                 rm -rf /tmp/btop*
             fi
-        elif [[ "$os" == "darwin" ]]; then
-            curl -sL "https://github.com/aristocratos/btop/releases/latest/download/btop-${btop_arch}-macos-monterey.tbz" -o /tmp/btop.tbz
-            if [[ -f /tmp/btop.tbz ]]; then
-                tar -xjf /tmp/btop.tbz -C /tmp
-                mv /tmp/btop/bin/btop "${HOME}/.local/bin/"
-                rm -rf /tmp/btop*
-            fi
+        elif [[ "$os" == "darwin" ]] && command -v brew >/dev/null; then
+            log_info "Installing btop via Homebrew..."
+            brew install btop
         fi
     fi
 
