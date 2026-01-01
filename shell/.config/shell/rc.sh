@@ -9,19 +9,28 @@ SHELL_CONFIG_DIR="${HOME}/.config/shell"
 # Source aliases
 [ -f "${SHELL_CONFIG_DIR}/aliases.sh" ] && source "${SHELL_CONFIG_DIR}/aliases.sh"
 
+# Detect current shell
+if [ -n "$ZSH_VERSION" ]; then
+    CURRENT_SHELL="zsh"
+elif [ -n "$BASH_VERSION" ]; then
+    CURRENT_SHELL="bash"
+else
+    CURRENT_SHELL="bash"
+fi
+
 # Initialize starship prompt
 if command -v starship &>/dev/null; then
-    eval "$(starship init bash 2>/dev/null || starship init zsh 2>/dev/null)"
+    eval "$(starship init $CURRENT_SHELL)"
 fi
 
 # Initialize zoxide if available
 if command -v zoxide &>/dev/null; then
-    eval "$(zoxide init bash 2>/dev/null || zoxide init zsh 2>/dev/null)"
+    eval "$(zoxide init $CURRENT_SHELL)"
 fi
 
 # Initialize atuin if available
 if command -v atuin &>/dev/null; then
-    eval "$(atuin init bash 2>/dev/null || atuin init zsh 2>/dev/null)"
+    eval "$(atuin init $CURRENT_SHELL)"
 fi
 
 # FZF integration
