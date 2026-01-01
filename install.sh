@@ -282,22 +282,26 @@ install_tools() {
     fi
 
     # Configure btop for GPU monitoring
-    if command -v btop >/dev/null; then
-        mkdir -p "${HOME}/.config/btop"
-        local gpu_boxes=""
-        if command -v nvidia-smi >/dev/null; then
-            local gpu_count=$(nvidia-smi -L 2>/dev/null | wc -l)
-            if [[ "$gpu_count" -gt 0 ]]; then
-                log_info "Detected $gpu_count NVIDIA GPU(s), configuring btop..."
-                for ((i=0; i<gpu_count; i++)); do
-                    gpu_boxes+=" gpu$i"
-                done
+    if command -v btop >/dev/null && command -v nvidia-smi >/dev/null; then
+        local gpu_count=$(nvidia-smi -L 2>/dev/null | wc -l)
+        if [[ "$gpu_count" -gt 0 ]]; then
+            log_info "Detected $gpu_count NVIDIA GPU(s), configuring btop..."
+            local gpu_boxes=""
+            for ((i=0; i<gpu_count; i++)); do
+                gpu_boxes+="gpu$i "
+            done
+            mkdir -p "${HOME}/.config/btop"
+            local btop_conf="${HOME}/.config/btop/btop.conf"
+            if [[ -f "$btop_conf" ]]; then
+                # Update existing config - replace shown_boxes line
+                sed -i "s/^shown_boxes = .*/shown_boxes = \"cpu mem net proc ${gpu_boxes}\"/" "$btop_conf"
+            else
+                # Create new config
+                cat > "$btop_conf" << EOF
+shown_boxes = "cpu mem net proc ${gpu_boxes}"
+EOF
             fi
         fi
-        cat > "${HOME}/.config/btop/btop.conf" << EOF
-shown_boxes = "cpu mem net proc${gpu_boxes}"
-show_gpu_info = "Auto"
-EOF
     fi
 
     # atuin (shell history)
