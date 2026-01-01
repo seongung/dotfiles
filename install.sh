@@ -222,15 +222,13 @@ install_tools() {
     # zoxide (smarter cd)
     if ! command -v zoxide >/dev/null; then
         log_info "Installing zoxide..."
-        curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-0.9.4-${arch}-unknown-${os}-musl.tar.gz" -o /tmp/zoxide.tar.gz 2>/dev/null || \
-        curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${arch}-unknown-${os}-musl.tar.gz" -o /tmp/zoxide.tar.gz 2>/dev/null
-        if [[ -f /tmp/zoxide.tar.gz ]]; then
-            tar -xzf /tmp/zoxide.tar.gz -C "${HOME}/.local/bin" zoxide 2>/dev/null || \
-            tar -xzf /tmp/zoxide.tar.gz -C /tmp && mv /tmp/zoxide "${HOME}/.local/bin/"
-            rm -f /tmp/zoxide.tar.gz
-        else
-            # Fallback: use zoxide installer
-            curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash -s -- --bin-dir "${HOME}/.local/bin"
+        local zoxide_arch="${arch}"
+        [[ "$arch" == "amd64" ]] && zoxide_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && zoxide_arch="aarch64"
+        if [[ "$os" == "linux" ]]; then
+            curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${zoxide_arch}-unknown-linux-musl.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
+        elif [[ "$os" == "darwin" ]]; then
+            curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${zoxide_arch}-apple-darwin.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
         fi
     fi
 
@@ -240,16 +238,16 @@ install_tools() {
         local dust_arch="${arch}"
         [[ "$arch" == "amd64" ]] && dust_arch="x86_64"
         [[ "$arch" == "arm64" ]] && dust_arch="aarch64"
-        local dust_os="${os}"
-        [[ "$os" == "darwin" ]] && dust_os="apple-darwin"
-        [[ "$os" == "linux" ]] && dust_os="unknown-linux-musl"
-        curl -sL "https://github.com/bootandy/dust/releases/latest/download/dust-v0.9.0-${dust_arch}-${dust_os}.tar.gz" -o /tmp/dust.tar.gz 2>/dev/null || \
-        curl -sL "https://github.com/bootandy/dust/releases/download/v0.9.0/dust-v0.9.0-${dust_arch}-${dust_os}.tar.gz" -o /tmp/dust.tar.gz
-        if [[ -f /tmp/dust.tar.gz ]]; then
-            tar -xzf /tmp/dust.tar.gz -C /tmp
-            find /tmp -name 'dust' -type f -executable -exec mv {} "${HOME}/.local/bin/" \; 2>/dev/null || \
-            mv /tmp/dust-*/dust "${HOME}/.local/bin/" 2>/dev/null
-            rm -rf /tmp/dust*
+        if [[ "$os" == "linux" ]]; then
+            # Get latest version from GitHub API
+            local dust_ver=$(curl -sL "https://api.github.com/repos/bootandy/dust/releases/latest" | grep '"tag_name"' | cut -d'"' -f4)
+            if [[ -n "$dust_ver" ]]; then
+                curl -sL "https://github.com/bootandy/dust/releases/download/${dust_ver}/dust-${dust_ver}-${dust_arch}-unknown-linux-musl.tar.gz" | tar xz -C /tmp
+                mv /tmp/dust-*/dust "${HOME}/.local/bin/" 2>/dev/null
+                rm -rf /tmp/dust-*
+            fi
+        elif [[ "$os" == "darwin" ]] && command -v brew >/dev/null; then
+            brew install dust
         fi
     fi
 
