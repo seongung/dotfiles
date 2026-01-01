@@ -151,7 +151,7 @@ setup_starship() {
     if ! command -v starship >/dev/null; then
         log_info "Installing starship to ~/.local/bin..."
         mkdir -p "${HOME}/.local/bin"
-        curl -sS https://starship.rs/install.sh | bash -s -- -y -b "${HOME}/.local/bin"
+        curl -sS https://starship.rs/install.sh | sh -s -- -y -b "${HOME}/.local/bin" 2>/dev/null
     fi
 }
 
