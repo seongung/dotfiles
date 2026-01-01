@@ -173,13 +173,12 @@ setup_shell() {
     local source_line='[ -f "$HOME/.config/shell/rc.sh" ] && source "$HOME/.config/shell/rc.sh"'
 
     for rc in "${HOME}/.bashrc" "${HOME}/.zshrc"; do
-        if [[ -f "$rc" ]]; then
-            if ! grep -q '.config/shell/rc.sh' "$rc"; then
-                log_info "Adding source line to $rc"
-                echo "" >> "$rc"
-                echo "# Dotfiles shell config" >> "$rc"
-                echo "$source_line" >> "$rc"
-            fi
+        [[ -f "$rc" ]] || continue
+        if ! grep -q '.config/shell/rc.sh' "$rc" 2>/dev/null; then
+            log_info "Adding source line to $rc"
+            echo "" >> "$rc"
+            echo "# Dotfiles shell config" >> "$rc"
+            echo "$source_line" >> "$rc"
         fi
     done
 }
