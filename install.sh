@@ -309,7 +309,7 @@ install_tools() {
     fi
 
     # lazydocker (docker TUI)
-    if ! command -v lazydocker >/dev/null; then
+    if ! command -v lazydocker >/dev/null && command -v docker >/dev/null; then
         log_info "Installing lazydocker..."
         local lazydocker_arch="${arch}"
         [[ "$arch" == "amd64" ]] && lazydocker_arch="x86_64"
