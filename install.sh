@@ -209,6 +209,18 @@ install_tools() {
         *) log_warn "Unsupported OS"; return ;;
     esac
 
+    # tmux
+    if ! command -v tmux >/dev/null; then
+        log_info "Installing tmux..."
+        if command -v apt-get >/dev/null; then
+            apt-get update -qq && apt-get install -y -qq tmux 2>/dev/null || log_warn "Failed to install tmux via apt"
+        elif command -v dnf >/dev/null; then
+            dnf install -y -q tmux 2>/dev/null || log_warn "Failed to install tmux via dnf"
+        elif command -v yum >/dev/null; then
+            yum install -y -q tmux 2>/dev/null || log_warn "Failed to install tmux via yum"
+        fi
+    fi
+
     # yq (YAML processor)
     if ! command -v yq >/dev/null; then
         log_info "Installing yq..."
