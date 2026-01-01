@@ -281,6 +281,18 @@ install_tools() {
         fi
     fi
 
+    # nvtop for GPU monitoring (btop static binary lacks GPU support)
+    if command -v nvidia-smi >/dev/null && ! command -v nvtop >/dev/null; then
+        log_info "Detected NVIDIA GPU(s), installing nvtop..."
+        if command -v apt-get >/dev/null; then
+            apt-get update -qq && apt-get install -y -qq nvtop 2>/dev/null || log_warn "Failed to install nvtop via apt"
+        elif command -v dnf >/dev/null; then
+            dnf install -y -q nvtop 2>/dev/null || log_warn "Failed to install nvtop via dnf"
+        elif command -v yum >/dev/null; then
+            yum install -y -q nvtop 2>/dev/null || log_warn "Failed to install nvtop via yum"
+        fi
+    fi
+
     # Configure btop for GPU monitoring
     if command -v btop >/dev/null && command -v nvidia-smi >/dev/null; then
         local gpu_count=$(nvidia-smi -L 2>/dev/null | wc -l)
