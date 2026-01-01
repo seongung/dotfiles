@@ -1,7 +1,9 @@
 add_newline = false
 # A minimal left prompt (username@hostname shown on SSH only)
 format = """$username$hostname$directory$character"""
+right_format = """$all"""
 palette = "catppuccin_mocha"
+command_timeout = 1000
 
 [username]
 show_always = false  # only show on SSH
@@ -10,10 +12,6 @@ format = '[$user](bold green)'
 [hostname]
 ssh_only = true
 format = '[@$hostname](bold green):'
-
-# move the rest of the prompt to the right
-right_format = """$all"""
-command_timeout = 1000
 
 [character]
 vicmd_symbol = "[N] >>>"
