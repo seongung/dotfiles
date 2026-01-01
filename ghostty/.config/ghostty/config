@@ -3,7 +3,7 @@
 
 # Font
 font-family = "Maple Mono NF"
-font-size = 15.5
+font-size = 14
 
 # Theme
 theme = "Gruvbox Material"
@@ -16,5 +16,14 @@ window-padding-color = extend
 window-step-resize = true
 adjust-cell-height = -1%
 
+keybind = ctrl+h=text:\x1b[104;5u
+keybind = ctrl+j=text:\x1b[106;5u
+keybind = ctrl+k=text:\x1b[107;5u
+keybind = ctrl+l=text:\x1b[108;5u
+
+
 # macOS specific
 macos-option-as-alt = true
+
+
+

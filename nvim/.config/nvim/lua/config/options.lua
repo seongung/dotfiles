@@ -3,3 +3,4 @@
 -- Add any additional options here
 
 vim.opt.list = false -- Don't show invisible characters (spaces, tabs, etc.)
+vim.opt.timeoutlen = 500 -- Time to wait for mapped sequence (which-key delay)

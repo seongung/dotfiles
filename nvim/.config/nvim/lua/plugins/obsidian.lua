@@ -55,16 +55,6 @@ return {
       name = "snacks.pick",
     },
 
-    -- UI enhancements
-    ui = {
-      enable = true,
-      checkboxes = {
-        [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
-        ["x"] = { char = "", hl_group = "ObsidianDone" },
-        [">"] = { char = "", hl_group = "ObsidianRightArrow" },
-        ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
-      },
-    },
   },
   keys = {
     { "<leader>on", "<cmd>Obsidian new<cr>", desc = "New note" },
