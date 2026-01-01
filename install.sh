@@ -151,7 +151,16 @@ setup_starship() {
     if ! command -v starship >/dev/null; then
         log_info "Installing starship to ~/.local/bin..."
         mkdir -p "${HOME}/.local/bin"
-        curl -sS https://starship.rs/install.sh | sh -s -- -y -b "${HOME}/.local/bin" 2>/dev/null
+        local starship_arch
+        case "$(uname -m)" in
+            x86_64) starship_arch="x86_64" ;;
+            aarch64|arm64) starship_arch="aarch64" ;;
+            *) log_warn "Unsupported architecture for starship"; return ;;
+        esac
+        case "$(uname -s)" in
+            Linux)  curl -sL "https://github.com/starship/starship/releases/latest/download/starship-${starship_arch}-unknown-linux-musl.tar.gz" | tar xz -C "${HOME}/.local/bin" ;;
+            Darwin) curl -sL "https://github.com/starship/starship/releases/latest/download/starship-${starship_arch}-apple-darwin.tar.gz" | tar xz -C "${HOME}/.local/bin" ;;
+        esac
     fi
 }
 
