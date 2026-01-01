@@ -27,22 +27,26 @@ log_info()  { echo -e "${GREEN}[INFO]${NC} $*"; }
 log_warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
-# Detect if running on remote server
-detect_remote() {
-    # Explicit override
-    if [[ "${DOTFILES_REMOTE:-0}" == "1" ]]; then
-        return 0
+# Ask user for environment type
+ask_environment() {
+    # Check for explicit override first
+    if [[ "${DOTFILES_REMOTE:-}" == "1" ]]; then
+        echo "remote"
+        return
+    elif [[ "${DOTFILES_REMOTE:-}" == "0" ]]; then
+        echo "local"
+        return
     fi
-    # SSH environment variables
-    if [[ -n "${SSH_CONNECTION:-}" ]] || [[ -n "${SSH_TTY:-}" ]] || [[ -n "${SSH_CLIENT:-}" ]]; then
-        return 0
-    fi
-    # Check if hostname suggests a cloud/remote instance
-    local hostname=$(hostname 2>/dev/null || cat /etc/hostname 2>/dev/null || echo "")
-    if [[ "$hostname" =~ (vm|instance|cloud|dev-gpu|server|node) ]]; then
-        return 0
-    fi
-    return 1
+
+    # Interactive prompt
+    echo -e "${YELLOW}Is this a local machine or remote server?${NC}" >&2
+    echo "  1) Local (full config with plugins)" >&2
+    echo "  2) Remote (minimal config)" >&2
+    read -p "Enter choice [1/2]: " choice
+    case "$choice" in
+        2|r|R|remote) echo "remote" ;;
+        *) echo "local" ;;
+    esac
 }
 
 # Check prerequisites
@@ -276,12 +280,14 @@ main() {
 
     check_prereqs
 
+    local env_type
+    env_type=$(ask_environment)
     local is_remote="false"
-    if detect_remote; then
+    if [[ "$env_type" == "remote" ]]; then
         is_remote="true"
-        log_info "Detected REMOTE environment"
+        log_info "Setting up REMOTE environment"
     else
-        log_info "Detected LOCAL environment"
+        log_info "Setting up LOCAL environment"
     fi
 
     # Create backup directory in case we need it
