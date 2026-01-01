@@ -225,10 +225,14 @@ install_tools() {
         local zoxide_arch="${arch}"
         [[ "$arch" == "amd64" ]] && zoxide_arch="x86_64"
         [[ "$arch" == "arm64" ]] && zoxide_arch="aarch64"
-        if [[ "$os" == "linux" ]]; then
-            curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${zoxide_arch}-unknown-linux-musl.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
-        elif [[ "$os" == "darwin" ]]; then
-            curl -sL "https://github.com/ajeetdsouza/zoxide/releases/latest/download/zoxide-${zoxide_arch}-apple-darwin.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
+        # Get latest version (v0.9.8 -> 0.9.8)
+        local zoxide_ver=$(curl -sL "https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest" | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
+        if [[ -n "$zoxide_ver" ]]; then
+            if [[ "$os" == "linux" ]]; then
+                curl -sL "https://github.com/ajeetdsouza/zoxide/releases/download/v${zoxide_ver}/zoxide-${zoxide_ver}-${zoxide_arch}-unknown-linux-musl.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
+            elif [[ "$os" == "darwin" ]]; then
+                curl -sL "https://github.com/ajeetdsouza/zoxide/releases/download/v${zoxide_ver}/zoxide-${zoxide_ver}-${zoxide_arch}-apple-darwin.tar.gz" | tar xz -C "${HOME}/.local/bin" zoxide
+            fi
         fi
     fi
 
