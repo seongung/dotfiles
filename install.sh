@@ -40,8 +40,8 @@ ask_environment() {
 
     # Interactive prompt (read from /dev/tty for curl|bash compatibility)
     echo -e "${YELLOW}Is this a local machine or remote server?${NC}" >&2
-    echo "  1) Local (full config with plugins)" >&2
-    echo "  2) Remote (minimal config)" >&2
+    echo "  1) Local (full tmux config with plugins)" >&2
+    echo "  2) Remote (lighter tmux config, shows hostname)" >&2
     read -p "Enter choice [1/2]: " choice </dev/tty
     case "$choice" in
         2|r|R|remote) echo "remote" ;;
