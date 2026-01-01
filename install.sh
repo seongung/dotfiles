@@ -144,8 +144,13 @@ setup_nvim() {
 
 # Setup starship
 setup_starship() {
+    local is_remote="$1"
     log_info "Setting up starship..."
-    symlink "${DOTFILES_DIR}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+    if [[ "$is_remote" == "true" ]]; then
+        symlink "${DOTFILES_DIR}/starship/.config/starship/remote.toml" "${HOME}/.config/starship.toml"
+    else
+        symlink "${DOTFILES_DIR}/starship/.config/starship.toml" "${HOME}/.config/starship.toml"
+    fi
 
     # Install starship if not present
     if ! command -v starship >/dev/null; then
@@ -304,7 +309,7 @@ main() {
 
     setup_tmux "$is_remote"
     setup_nvim
-    setup_starship
+    setup_starship "$is_remote"
     setup_shell
     install_tools
 

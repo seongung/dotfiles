@@ -1,16 +1,16 @@
 add_newline = false
-# A minimal left prompt (username@hostname shown on SSH only)
+# Remote config: always show username@hostname
 format = """$username$hostname$directory$character"""
 right_format = """$all"""
 palette = "catppuccin_mocha"
 command_timeout = 1000
 
 [username]
-show_always = false
+show_always = true
 format = '[$user](bold green)'
 
 [hostname]
-ssh_only = true
+ssh_only = false
 format = '[@$hostname](bold green):'
 
 [character]
