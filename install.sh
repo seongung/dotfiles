@@ -293,6 +293,36 @@ install_tools() {
         fi
     fi
 
+    # lazygit (git TUI)
+    if ! command -v lazygit >/dev/null; then
+        log_info "Installing lazygit..."
+        local lazygit_arch="${arch}"
+        [[ "$arch" == "amd64" ]] && lazygit_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && lazygit_arch="arm64"
+        local lazygit_os="${os}"
+        [[ "$os" == "darwin" ]] && lazygit_os="Darwin"
+        [[ "$os" == "linux" ]] && lazygit_os="Linux"
+        local lazygit_ver=$(curl -sL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
+        if [[ -n "$lazygit_ver" ]]; then
+            curl -sL "https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_ver}/lazygit_${lazygit_ver}_${lazygit_os}_${lazygit_arch}.tar.gz" | tar xz -C "${HOME}/.local/bin" lazygit
+        fi
+    fi
+
+    # lazydocker (docker TUI)
+    if ! command -v lazydocker >/dev/null && command -v docker >/dev/null; then
+        log_info "Installing lazydocker..."
+        local lazydocker_arch="${arch}"
+        [[ "$arch" == "amd64" ]] && lazydocker_arch="x86_64"
+        [[ "$arch" == "arm64" ]] && lazydocker_arch="arm64"
+        local lazydocker_os="${os}"
+        [[ "$os" == "darwin" ]] && lazydocker_os="Darwin"
+        [[ "$os" == "linux" ]] && lazydocker_os="Linux"
+        local lazydocker_ver=$(curl -sL "https://api.github.com/repos/jesseduffield/lazydocker/releases/latest" | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
+        if [[ -n "$lazydocker_ver" ]]; then
+            curl -sL "https://github.com/jesseduffield/lazydocker/releases/download/v${lazydocker_ver}/lazydocker_${lazydocker_ver}_${lazydocker_os}_${lazydocker_arch}.tar.gz" | tar xz -C "${HOME}/.local/bin" lazydocker
+        fi
+    fi
+
     # atuin (shell history)
     if ! command -v atuin >/dev/null; then
         log_info "Installing atuin..."
