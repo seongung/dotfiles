@@ -176,24 +176,31 @@ install_optional_tools() {
         "${HOME}/.fzf/install" --key-bindings --completion --no-update-rc --no-bash --no-zsh
     fi
 
-    # yq (YAML processor)
-    if ! command -v yq >/dev/null; then
-        log_info "Installing yq..."
-        local arch
-        case "$(uname -m)" in
-            x86_64)  arch="amd64" ;;
-            aarch64|arm64) arch="arm64" ;;
-            *) log_warn "Unsupported architecture for yq"; return ;;
-        esac
-        local os
-        case "$(uname -s)" in
-            Linux)  os="linux" ;;
-            Darwin) os="darwin" ;;
-            *) log_warn "Unsupported OS for yq"; return ;;
-        esac
-        curl -sL "https://github.com/mikefarah/yq/releases/latest/download/yq_${os}_${arch}" -o "${HOME}/.local/bin/yq"
-        chmod +x "${HOME}/.local/bin/yq"
+}
+
+# Install yq (always, both local and remote)
+install_yq() {
+    if command -v yq >/dev/null; then
+        return
     fi
+
+    log_info "Installing yq..."
+    mkdir -p "${HOME}/.local/bin"
+
+    local arch
+    case "$(uname -m)" in
+        x86_64)  arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) log_warn "Unsupported architecture for yq"; return ;;
+    esac
+    local os
+    case "$(uname -s)" in
+        Linux)  os="linux" ;;
+        Darwin) os="darwin" ;;
+        *) log_warn "Unsupported OS for yq"; return ;;
+    esac
+    curl -sL "https://github.com/mikefarah/yq/releases/latest/download/yq_${os}_${arch}" -o "${HOME}/.local/bin/yq"
+    chmod +x "${HOME}/.local/bin/yq"
 }
 
 # Main installation
@@ -220,6 +227,7 @@ main() {
     setup_nvim
     setup_starship
     setup_shell
+    install_yq
 
     if [[ "$is_remote" == "false" ]]; then
         install_optional_tools
