@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Dotfiles Installer
-# Usage: curl -sL https://raw.githubusercontent.com/seongung/dotfiles/main/install.sh | bash
+# Usage: curl -sL https://raw.githubusercontent.com/seongung/dotfiles/master/install.sh | bash
 #
 # Environment variables:
 #   DOTFILES_REMOTE=1    - Force remote mode (use remote tmux config)
