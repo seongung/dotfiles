@@ -2,6 +2,7 @@
 #
 # Dotfiles Installer
 # Usage: curl -sL https://raw.githubusercontent.com/seongung/dotfiles/master/install.sh | bash
+# NOTE: Must use bash, not sh (script uses bash-specific features)
 #
 # Environment variables:
 #   DOTFILES_REMOTE=1    - Force remote mode (use remote tmux config)
@@ -28,7 +29,17 @@ log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 # Detect if running on remote server
 detect_remote() {
-    if [[ -n "${SSH_CONNECTION:-}" ]] || [[ -n "${SSH_TTY:-}" ]] || [[ "${DOTFILES_REMOTE:-0}" == "1" ]]; then
+    # Explicit override
+    if [[ "${DOTFILES_REMOTE:-0}" == "1" ]]; then
+        return 0
+    fi
+    # SSH environment variables
+    if [[ -n "${SSH_CONNECTION:-}" ]] || [[ -n "${SSH_TTY:-}" ]] || [[ -n "${SSH_CLIENT:-}" ]]; then
+        return 0
+    fi
+    # Check if hostname suggests a cloud/remote instance
+    local hostname=$(hostname 2>/dev/null || cat /etc/hostname 2>/dev/null || echo "")
+    if [[ "$hostname" =~ (vm|instance|cloud|dev-gpu|server|node) ]]; then
         return 0
     fi
     return 1
@@ -136,7 +147,7 @@ setup_starship() {
     if ! command -v starship >/dev/null; then
         log_info "Installing starship to ~/.local/bin..."
         mkdir -p "${HOME}/.local/bin"
-        curl -sS https://starship.rs/install.sh | sh -s -- -y -b "${HOME}/.local/bin"
+        curl -sS https://starship.rs/install.sh | bash -s -- -y -b "${HOME}/.local/bin"
     fi
 }
 
