@@ -9,7 +9,7 @@ export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"
 
 # Path additions
-export PATH="${HOME}/.local/bin:${PATH}"
+export PATH="${HOME}/.local/bin:${HOME}/.atuin/bin:${PATH}"
 
 # Starship
 export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship.toml"
