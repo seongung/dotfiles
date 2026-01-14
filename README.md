@@ -8,6 +8,7 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 - **tmux** - Terminal multiplexer
 - **ghostty** - Terminal emulator
 - **starship** - Shell prompt
+- **claude** - Claude Code config/hooks
 
 ## Installation
 
@@ -27,9 +28,14 @@ apt install stow
 git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 stow nvim ghostty starship tmux
+
+# Optional
+stow claude
 ```
 
-This creates symlinks in `~/.config/` pointing to the dotfiles repo.
+This creates symlinks in `~/.config/` pointing to the dotfiles repo. (`stow` targets the parent directory of the repo by default, so cloning to `~/dotfiles` is recommended. If you clone elsewhere, use `stow -t "$HOME" ...`.)
+
+If `stow` reports `existing target is not owned by stow`, you already have files (or symlinks from another dotfiles directory) in the target location — remove/backup them or run `stow -D ...` from the old dotfiles repo first.
 
 ### Uninstall
 

@@ -2,6 +2,7 @@
 # https://ghostty.org/docs/config
 
 # Font
+# font-family = "JetBrains Mono"
 font-family = "Maple Mono NF"
 font-size = 14
 
@@ -21,9 +22,9 @@ keybind = ctrl+j=text:\x1b[106;5u
 keybind = ctrl+k=text:\x1b[107;5u
 keybind = ctrl+l=text:\x1b[108;5u
 
+# Alt+Arrow keys for jiratui pagination
+keybind = alt+left=text:\x1b[1;3D
+keybind = alt+right=text:\x1b[1;3C
 
 # macOS specific
 macos-option-as-alt = true
-
-
-
